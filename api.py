@@ -1,9 +1,21 @@
 from flask import Flask
-from flask_restful import Resource, Api, fields, marshal_with
+from flask_httpauth import HTTPTokenAuth
+from flask_restful import Resource, Api, fields, marshal_with, abort
+
 from models import Item
+
 
 app = Flask(__name__)
 api = Api(app)
+auth = HTTPTokenAuth(scheme='Token')
+
+
+valid_tokens = {'token1', 'token2'}
+
+
+@auth.verify_token
+def verify_token(token):
+    return token in valid_tokens
 
 
 inventory_fields = dict(
@@ -20,13 +32,19 @@ class ItemList(Resource):
         return Item.get_all().values()
 
 
-class ItemSimple(Resource):
+class ItemPurchaseSimple(Resource):
+    @auth.login_required
     def post(self, id):
-        pass
+        try:
+            item = Item.get(id)
+        except KeyError:
+            abort(404, message='Item does not exist')
+
+        return {'success': item.purchase()}
 
 
 api.add_resource(ItemList, '/items')
-api.add_resource(ItemSimple, '/item/<int:id>')
+api.add_resource(ItemPurchaseSimple, '/items/<int:id>/purchase')
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -7,6 +7,9 @@ class Item(object):
         self.description = description
         self.price = price
 
+    def purchase(self):
+        return True
+
     @staticmethod
     def get_all():
         return {
@@ -16,3 +19,8 @@ class Item(object):
             4: Item(4, 'Lock', 'Padlock with combination', 5),
             5: Item(5, 'Pen', 'Classy ball point pen', 20)
         }
+
+    @staticmethod
+    def get(id):
+        items = Item.get_all()
+        return items[id]
