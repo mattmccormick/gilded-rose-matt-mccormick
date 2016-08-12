@@ -56,7 +56,7 @@ This route lists the inventory.
 ]
 ````
 
-#### POST /items/**id**/purchase
+#### POST /items/{id}/purchase
 
 This route is where you can purchase an item.
 Requires authorization.
